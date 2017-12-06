@@ -1,15 +1,19 @@
 ``S-Amiral Compiler``
 =====================
 
-.. image:: img/téléchargé.png
+.. image:: img/Logo.png
     :alt: compileur-logo
     :scale: 30%
     :align: right
+    :target: https://github.com/S-Amiral/Compiler
 
 
-Cahier des charges du projet de compilateur
+Cahier des charges du projet de semestre du cours de compilateur.
 
-Par Pedro Costa [#cp]_, André Da Silva [#dsa]_, Maël Pedretti [#mp]_
+Par
+    - Pedro Costa [#cp]_
+    - André Da Silva [#dsa]_
+    - Maël Pedretti [#mp]_
 
 Introduction
 ------------
@@ -23,6 +27,11 @@ Buts
 ----
 
 Dans cette section sont détaillés les buts du projet.
+
+Nouveautés
+**********
+
+- Prendre en main Parrot_ (cf. technologies_)
 
 Ajouts
 ******
@@ -44,7 +53,7 @@ Modifications
 Technologies
 ------------
 
-Dans cette section sont détaillés les technologies utilisées dans le projet
+Dans cette section sont détaillés les technologies utilisées dans le projet.
 
 1. Langage : ``Python``
 2. Outils : ``Python Lex & Yacc`` (Ply_)
