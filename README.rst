@@ -1,6 +1,9 @@
 ``S-Amiral Compiler``
 =====================
 
+.. image:: https://travis-ci.org/S-Amiral/Compiler.svg?branch=master
+    :target: https://travis-ci.org/S-Amiral/Compiler
+
 .. image:: img/Logo.png
     :alt: compileur-logo
     :scale: 30%
