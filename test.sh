@@ -2,8 +2,8 @@
 
 set -xe
 
-pycodestyle .
-pydocstyle .
-isort --recursive .
-flake8 .
+isort --recursive Compiler
+pycodestyle Compiler
+pydocstyle Compiler
+flake8 . 
 find . -iname "*.rst" | xargs rstcheck --report 2
