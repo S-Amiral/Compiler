@@ -147,6 +147,24 @@ class OpNode(Node):
         return "%s (%s)" % (self.op, self.nbargs)
 
 
+class CompNode(Node):
+    """OpNode class."""
+
+    def __init__(self, op, children):
+        """Init OpNode."""
+        exit(op)
+        Node.__init__(self, children)
+        self.op = op
+        try:
+            self.nbargs = len(children)
+        except AttributeError:
+            self.nbargs = 1
+
+    def __repr__(self):
+        """Represent node."""
+        return "%s (%s)" % (self.op, self.nbargs)
+
+
 class AssignNode(Node):
     """AssignNode class."""
 
