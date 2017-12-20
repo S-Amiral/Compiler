@@ -3,6 +3,10 @@
 
 .. image:: https://travis-ci.org/S-Amiral/Compiler.svg?branch=master
     :target: https://travis-ci.org/S-Amiral/Compiler
+    
+.. image:: https://badges.gitter.im/S-Amiral/Compiler.svg
+    :alt: Join the chat at https://gitter.im/S-Amiral/Compiler
+    :target: https://gitter.im/S-Amiral/Compiler?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 
 .. image:: img/Logo.png
     :alt: compileur-logo
