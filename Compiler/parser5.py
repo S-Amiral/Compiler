@@ -25,7 +25,7 @@ vars = {}
 
 def p_programme(p):
     """
-    programme : statement
+    programme : statement ';'
     |  statement ';' programme ';'
     """
     try:
@@ -47,7 +47,9 @@ def p_statement(p):
 
 
 def p_structure(p):
-    """structure : WHILE expression '{' programme '}' """
+    """
+    structure : WHILE expression '{' programme '}'
+    """
     p[0] = AST.WhileNode([p[2], p[4]])
 
 
@@ -57,6 +59,15 @@ def p_expression_op(p):
         | expression MUL_OP expression
     """
     p[0] = AST.OpNode(p[2], [p[1], p[3]])
+
+
+def p_expression_comp(p):
+    """
+    expression : expression '<' expression
+        | expression '>' expression
+        | expression DOUBLE_EQUAL expression
+    """
+    p[0] = AST.CompNode(p[2], [p[1], p[3]])
 
 
 def p_expression_num(p):

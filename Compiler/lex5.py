@@ -13,11 +13,16 @@ tokens = (
     'NUMBER',
     'ADD_OP',
     'MUL_OP',
-    'VARIABLE',
     'IDENTIFIER',
+    'DOUBLE_EQUAL',
 ) + tuple(map(lambda s: s.upper(), reserved_words))
 
-literals = '();=}{'
+literals = '();=}{<>'
+
+
+def t_DOUBLE_EQUAL(t):
+    r'=='
+    return t
 
 
 def t_ADD_OP(t):
@@ -37,13 +42,6 @@ def t_NUMBER(t):
     except ValueError:
         print("Line %d: Problem while parsing %s!" % (t.lineno, t.value))
         t.value = 0
-    return t
-
-
-def t_VARIABLE(t):
-    r'\$[A-Za-z_]\w*'
-    if t.value in reserved_words:
-        t.type = t.value.upper()
     return t
 
 
