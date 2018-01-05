@@ -1,13 +1,28 @@
-a=0;
+print "Start!";
+def abc(a, b, c) {
+	print a * b;
+	print b;
+	print c;
+	}
+
+def a(a) {
+	print a;
+}
+
+def void(){
+	print 2000;
+}
+
+number a=0;
 while (a-10) {
-	b = 0;
+	number b = 0;
 	while (b-2) {
 		print a;
 		if(a==5) {
-			print b;
+			a(b);
 		}
-		b = b+1
-	};
-	a = a+1
-};
-print 100;
+		b = b+1;
+	}
+	a = a+1;
+}
+void();

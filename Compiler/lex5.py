@@ -9,22 +9,23 @@ reserved_words = (
     'string',
     'bool',
     'true',
-    'false'
+    'false',
+    'def'
 )
 
 tokens = (
-             'NUMBERAL',
-             'ADD_OP',
-             'MUL_OP',
-             'IDENTIFIER',
-             'EQUALS',
-             'LESSTHAN',
-             'GREATTHAN',
-             'NOTEQUAL',
-             'TEXT'
-         ) + tuple(map(lambda s: s.upper(), reserved_words))
+    'NUMBERAL',
+    'ADD_OP',
+    'MUL_OP',
+    'IDENTIFIER',
+    'EQUALS',
+    'LESSTHAN',
+    'GREATTHAN',
+    'NOTEQUAL',
+    'TEXT'
+) + tuple(map(lambda s: s.upper(), reserved_words))
 
-literals = '();=}{<>"'
+literals = '();=}{<>",'
 
 
 def t_TEXT(t):
@@ -69,6 +70,11 @@ def t_NUMBERAL(t):
     except ValueError:
         print("Line %d: Problem while parsing %s!" % (t.lineno, t.value))
         t.value = 0
+    return t
+
+
+def t_STRING(t):
+    r'"(.*)"'
     return t
 
 

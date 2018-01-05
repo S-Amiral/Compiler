@@ -128,6 +128,41 @@ class TokenNode(Node):
         return repr(self.tok)
 
 
+class FunctionParametersNode(Node):
+    """FunctionParametersNode class."""
+
+    type = 'function parameters'
+
+    def __init__(self, children):
+        """Init FunctionParametersNode."""
+        Node.__init__(self)
+        self.children = children
+
+    def __len__(self):
+        """Object length."""
+        return len(self.children)
+
+    def __iter__(self):
+        """Iterate through children."""
+        return iter(self.children)
+
+
+class FunctionNode(Node):
+    """FunctionNode class."""
+
+    type = 'function'
+
+    def __init__(self, identifier, children):
+        """Init FunctionNode."""
+        Node.__init__(self)
+        self.identifier = identifier
+        self.children = children
+
+    def __repr__(self):
+        """Represent node."""
+        return "Function %s" % (self.identifier)
+
+
 class OpNode(Node):
     """OpNode class."""
 
