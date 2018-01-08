@@ -1,0 +1,18 @@
+number a=0;
+
+bool isValid = false;
+
+while (isValid == false) {
+    print a;
+    a = a+1;
+    if( a == 10){
+        isValid = true;
+    }
+}
+
+for(number i = 0; i< 10 ; i = i+1;){
+    print i;
+}
+
+string toto = "Hello World";
+

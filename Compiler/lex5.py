@@ -1,4 +1,3 @@
-"""Lexem definitions."""
 import ply.lex as lex
 
 reserved_words = (
@@ -6,21 +5,49 @@ reserved_words = (
     'print',
     'if',
     'for',
-    'def'
+    'number',
+    'string',
+    'bool',
+    'true',
+    'false'
 )
 
 tokens = (
-    'NUMBER',
-    'ADD_OP',
-    'MUL_OP',
-    'IDENTIFIER',
-    'DOUBLE_EQUAL',
-) + tuple(map(lambda s: s.upper(), reserved_words))
+             'NUMBERAL',
+             'ADD_OP',
+             'MUL_OP',
+             'IDENTIFIER',
+             'EQUALS',
+             'LESSTHAN',
+             'GREATTHAN',
+             'NOTEQUAL',
+             'TEXT'
+         ) + tuple(map(lambda s: s.upper(), reserved_words))
 
-literals = '();=}{<>'
+literals = '();=}{<>"'
 
 
-def t_DOUBLE_EQUAL(t):
+def t_TEXT(t):
+    r'".*?"'
+    return t
+
+
+def t_NOTEQUAL(t):
+    r'!='
+    return t
+
+
+def t_LESSTHAN(t):
+    r'<='
+    return t
+
+
+def t_GREATTHAN(t):
+    r'>='
+    return t
+
+
+def t_EQUALS(t):
     r'=='
     return t
 
@@ -35,7 +62,7 @@ def t_MUL_OP(t):
     return t
 
 
-def t_NUMBER(t):
+def t_NUMBERAL(t):
     r'\d+(\.\d+)?'
     try:
         t.value = float(t.value)
@@ -69,6 +96,7 @@ lex.lex()
 
 if __name__ == "__main__":
     import sys
+
     prog = open(sys.argv[1]).read()
 
     lex.input(prog)

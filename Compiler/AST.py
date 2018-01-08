@@ -37,8 +37,11 @@ class Node:
         prefix += '|  '
         for c in self.children:
             if not isinstance(c, Node):
-                result += "%s*** Error: Child of type %r: %r\n" % (prefix,
-                                                                   type(c), c)
+                result += "%s*** Error: Child of type %r: %r\n" % (
+                    prefix,
+                    type(c),
+                    c
+                )
                 continue
             result += c.asciitree(prefix)
         return result
@@ -63,9 +66,6 @@ class Node:
             if label:
                 edge.set_label(str(i))
             dot.add_edge(edge)
-            # Workaround for a bug in pydot 1.0.2 on Windows:
-            # dot.set_graphviz_executables(
-            # {'dot': r'C:\Program Files\Graphviz2.16\bin\dot.exe'})
         return dot
 
     def threadTree(self, graph, seen=None, col=0):
@@ -91,16 +91,14 @@ class Node:
             edge = pydot.Edge(self.ID, c.ID)
             edge.set_color(color)
             edge.set_arrowsize('.5')
-            # Les arr�tes correspondant aux coutures ne sont pas
-            #   prises en compte
-            # pour le layout du graphe. Ceci permet de garder l'arbre
-            #   dans sa repr�sentation
-            # "standard", mais peut provoquer des surprises pour le trajet
-            #   parfois un peu
-            # tarabiscot� des coutures...
-            # En commantant cette ligne, le layout sera bien meilleur,
-            #   mais l'arbre nettement
-            # moins reconnaissable.
+            # Les arr�tes correspondant aux coutures ne sont
+            # pas prises en compte pour le layout du graphe.
+            # Ceci permet de garder l'arbre dans sa repr�sentation
+            # "standard", mais peut provoquer des surprises
+            # pour le trajet parfois un peu tarabiscot� des
+            # coutures...
+            # En commantant cette ligne, le layout sera bien
+            # meilleur, mais l'arbre nettement moins reconnaissable.
             edge.set_constraint('false')
             if label:
                 edge.set_taillabel(str(i))
@@ -147,14 +145,13 @@ class OpNode(Node):
         return "%s (%s)" % (self.op, self.nbargs)
 
 
-class CompNode(Node):
-    """OpNode class."""
+class AssignInitNode(Node):
+    """AssignInitNode class."""
 
-    def __init__(self, op, children):
-        """Init OpNode."""
-        exit(op)
+    def __init__(self, type_var, children):
+        """Init AssignInitNode."""
         Node.__init__(self, children)
-        self.op = op
+        self.type_var = type_var
         try:
             self.nbargs = len(children)
         except AttributeError:
@@ -162,7 +159,7 @@ class CompNode(Node):
 
     def __repr__(self):
         """Represent node."""
-        return "%s (%s)" % (self.op, self.nbargs)
+        return "%s assign" % self.type_var
 
 
 class AssignNode(Node):
@@ -181,6 +178,35 @@ class WhileNode(Node):
     """WhileNode class."""
 
     type = 'while'
+
+
+class IfConditionNode(Node):
+    """IfConditionNode class."""
+
+    def __init__(self, comp, children):
+        """Init IfConditionNode."""
+        Node.__init__(self, children)
+        self.comp = comp
+        try:
+            self.nbargs = len(children)
+        except AttributeError:
+            self.nbargs = 1
+
+    def __repr__(self):
+        """Represent node."""
+        return "%s (%s)" % (self.comp, self.nbargs)
+
+
+class ForNode(Node):
+    """ForNode class."""
+
+    type = 'for'
+
+
+class IfNode(Node):
+    """IfNode class."""
+
+    type = 'if'
 
 
 class EntryNode(Node):
@@ -203,4 +229,5 @@ def addToClass(cls):
     def decorator(func):
         setattr(cls, func.__name__, func)
         return func
+
     return decorator
