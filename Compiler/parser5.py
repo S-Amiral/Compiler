@@ -13,11 +13,11 @@ operations = {
     '/': lambda x, y: x / y,
 }
 
-precedence = (
-    ('left', 'ADD_OP'),
-    ('left', 'MUL_OP'),
-    ('right', 'UMINUS'),
-)
+# precedence = (
+#     ('left', 'ADD_OP'),
+#     ('left', 'MUL_OP'),
+#     ('right', 'UMINUS'),
+# )
 
 vars = {}
 fcts = {}
@@ -166,7 +166,7 @@ def p_expression_paren(p):
 
 
 def p_minus(p):
-    """ expression : ADD_OP expression %prec UMINUS"""
+    """ expression : ADD_OP expression"""
     p[0] = AST.OpNode(p[1], [p[2]])
 
 
