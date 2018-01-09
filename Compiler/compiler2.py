@@ -14,14 +14,10 @@ types = {
 cond_while_index = 1
 cond_for_index = 1
 cond_if_index = 1
-register_index = 0
-last_mult = -1
-cmpt = 0
-retour = ""
+register_index = 1
+cmpt = 1
 
 func = {}
-register_mult = []
-register_add = []
 
 
 @addToClass(AST.ProgramNode)  # noqa: F811
@@ -48,54 +44,36 @@ def compile(self):
 @addToClass(AST.OpNode)  # noqa: F811
 def compile(self):
     """Compile OpNode."""
-    global register_index, register_mult, register_add, cmpt, retour, last_mult
+    global register_index, cmpt
 
     byte_code = ""
     operator = True
 
+    if self.op is '-' and len(self.children) is 1:
+        byte_code += '-'
+
     for c in self.children:
 
-        number = c.compile()
+        # Clairement à améliorer
 
-        if self.op is '-' and len(self.children) is 1:
-            number = '-' + number
+        if cmpt % 3 == 0:
+            old_register_index = register_index
+            register_index += 1
+            byte_code += "\n\t$N%s = " % register_index
+            byte_code += "$N%s" % old_register_index + " "
+            byte_code += self.op + " "
+            cmpt = 2
 
-        # operator permet de ne pas effectué deux fois le même noeud
-        if operator:
-            # priorité aux multiplications et divisions
-            if self.op is '*' or self.op is '/':
-                byte_code += "\n\t$N%s = " % register_index
+        byte_code += c.compile()
+        cmpt += 1
 
-                if cmpt < 1:
-                    byte_code += number
-                else:
-                    byte_code += "$N%s" % (register_index-1)
-
-                byte_code += ' ' + self.op + ' '
-                byte_code += self.children[1].compile()
-
-                if register_index not in register_mult:
-                    register_mult.append(register_index)
-
-                cmpt += 1
-                register_index += 1
-            else:
-                cmpt = 0
-
+        if operator and cmpt <= 2:
+            byte_code += " " + self.op + " "
             operator = False
-        # puis traitement des additions et soustractions
-        if self.op is '+' or self.op is '-':
-            register_add.append(number + ' ' + self.op)
 
-    if register_mult:
-        if last_mult != register_mult[-1]:
-            last_mult = register_mult[-1]
-        else:
-            register_add.append("$N%s" % register_mult[-1] + ' ' + self.op)
+    cmpt = 1
 
-    retour += byte_code
-
-    return retour
+    return byte_code
 
 
 @addToClass(AST.IfConditionNode)  # noqa: F811
@@ -130,103 +108,49 @@ def compile(self):
 @addToClass(AST.AssignInitNode)  # noqa: F811
 def compile(self):
     """Compile AssignInitNode."""
-    global register_index, register_add, register_mult, retour
+    global register_index
+
+    register_type = ""
 
     byte_code = "\t.local " + types[self.type_var]
     byte_code += " " + self.children[0].tok + "\n\t"
 
-    register_type = ""
-
-    val = self.children[1].compile()
-
-    if '"' not in val:
+    if '"' not in self.children[1].compile():
         register_type = "$N"
     else:
         register_type = "$S"
 
-    if len(register_add) > 1:
-        # correspond aux opérations faites avant
-        # d'initialiser le résultat à la variable
-        byte_code += val + "\n\t"
-        byte_code += register_type + "%s = " % register_index
-        byte_code += register_add[0] + " " + register_add[1]
-        byte_code = byte_code[:-1]
-        byte_code += "\n\t"
-        register_add = register_add[2:]
-        # register_index += 1
-        for term in register_add:
-                byte_code += "$N%s = " % (register_index + 1)
-                byte_code += term + " $N%s" % register_index
-                byte_code += "\n\t"
-                register_index += 1
-    else:
-        byte_code += register_type + "%s = " % register_index
-        byte_code += val + "\n\t"
-
-    byte_code += "\n\t" + self.children[0].tok + " = "
+    byte_code += register_type + "%s = " % register_index
+    byte_code += self.children[1].compile() + "\n\t"
+    byte_code += self.children[0].tok + " = "
     byte_code += register_type + "%s" % register_index
-    byte_code += "\n\n"
-
-    # reset le retour des multiplications
-    retour = ""
-    # reset le tableau des additions
-    register_add = []
-    # reset le tableau des multiplications
-    register_mult = []
+    byte_code += "\n"
 
     register_index += 1
 
-    return byte_code
+    return byte_code + "\n"
 
 
 @addToClass(AST.AssignNode)  # noqa: F811
 def compile(self):
     """Compile AssignNode."""
-    global register_index, register_add, register_mult, retour
+    global register_index
 
     register_type = ""
-    byte_code = ""
 
-    val = self.children[1].compile()
-
-    if '"' not in val:
+    if '"' not in self.children[1].compile():
         register_type = "$N"
     else:
         register_type = "$S"
 
-    if len(register_add) > 1:
-        # correspond aux opérations faites avant
-        # d'initialiser le résultat à la variable
-        byte_code = val + "\n\t"
-        byte_code += register_type + "%s = " % register_index
-        byte_code += register_add[0] + " " + register_add[1]
-        byte_code = byte_code[:-1]
-        byte_code += "\n\t"
-        register_add = register_add[2:]
-        # register_index += 1
-        for term in register_add:
-                byte_code += "$N%s = " % (register_index + 1)
-                byte_code += term + " $N%s" % register_index
-                byte_code += "\n\t"
-                register_index += 1
-    else:
-        byte_code += register_type + "%s = " % register_index
-        byte_code += val + "\n\t"
-
-    byte_code += "\n\t" + self.children[0].tok + " = "
+    byte_code = register_type + "%s = " % register_index
+    byte_code += self.children[1].compile() + "\n\t"
+    byte_code += self.children[0].tok + " = "
     byte_code += register_type + "%s" % register_index
-    byte_code += "\n\n"
-
-    # reset le retour des multiplications
-    retour = ""
-    # reset le tableau des additions
-    register_add = []
-    # reset le tableau des multiplications
-    register_mult = []
 
     register_index += 1
 
-    return byte_code
+    return byte_code + "\n\n"
 
 
 @addToClass(AST.WhileNode)  # noqa: F811
