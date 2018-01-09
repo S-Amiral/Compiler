@@ -1,4 +1,5 @@
 """Recursive interpreter package."""
+import operator
 import sys
 from functools import reduce
 
@@ -13,6 +14,14 @@ operations = {
     '/': lambda x, y: x / y,
 }
 
+ops = {
+    ">": operator.gt,
+    ">=": operator.ge,
+    "<": operator.lt,
+    "<=": operator.le,
+    "==": operator.eq,
+    "!=": operator.ne
+}
 
 vars = {}
 local_vars = {}
@@ -33,13 +42,12 @@ def execute(self):
     """Execute TokenNode."""
     if isinstance(self.tok, str) and self.tok[0] is not '"':
         try:
-            return local_vars[self.tok]
+            return local_vars[self.tok][1]
         except KeyError:
             try:
-                return vars[self.tok]
+                return vars[self.tok][1]
             except KeyError:
-                raise KeyError
-            print("*** Error: variable %s undefined!" % self.tok)
+                print("*** Error: variable %s undefined!" % self.tok)
     return self.tok
 
 
@@ -55,7 +63,8 @@ def execute(self):
 @addToClass(AST.AssignNode)  # noqa: F811
 def execute(self):
     """Execute AssignNode."""
-    vars[self.children[0].tok] = self.children[1].execute()
+    vars[self.children[0].tok] = (
+        vars[self.children[0].tok][0], self.children[1].execute())
 
 
 @addToClass(AST.PrintNode)  # noqa: F811
@@ -82,23 +91,46 @@ def execute(self):
 def execute(self):
     """Execute FunctionNode."""
     if self.identifier not in fcts and len(self.children) > 0:
-        fcts[self.identifier] = self.children
+        fcts[self.identifier] = self.children  # [Function parameters, Program]
     elif self.identifier in fcts:
-        args = self.children
-        function_args = fcts[self.identifier][0]
+        args = self.children[0]  # passed args
+        function_args = fcts[self.identifier][0]  # definition args
 
         try:  # check if function and call have same number of arguments
             assert len(args) is len(function_args)
         except AssertionError as e:
             exit("ERROR!\nThe function you are calling needs %s parameters!" %
                  len(function_args))
-
         if len(function_args) > 0:  # set local variables for function
             i = 0
+            variable_type = function_args.children[0].type_var
             for i in range(len(args.children)):
-                local_vars[function_args.children[i].tok
-                           ] = args.children[i].execute()
+                variable_name = function_args.children[i].children[0].tok
+                local_vars[variable_name] = (
+                    variable_type, args.children[i].execute())
         fcts[self.identifier][1].execute()
+
+
+@addToClass(AST.AssignInitNode)  # noqa: F811
+def execute(self):
+    """Execute AssignInitNode."""
+    vars[self.children[0].tok] = (self.type_var, self.children[1].execute())
+
+
+@addToClass(AST.IfConditionNode)  # noqa: F811
+def execute(self):
+    """Execute IfConditionNode."""
+    op_func = ops[self.comp]
+    return op_func(self.children[0].execute(), self.children[1].execute())
+
+
+@addToClass(AST.ForNode)  # noqa: F811
+def execute(self):
+    """Execute ForNode."""
+    self.children[0].execute()
+    while self.children[1].execute():
+        self.children[3].execute()
+        self.children[2].execute()
 
 
 if __name__ == "__main__":

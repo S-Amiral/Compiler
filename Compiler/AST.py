@@ -138,6 +138,12 @@ class FunctionParametersNode(Node):
         Node.__init__(self)
         self.children = children
 
+    def __repr__(self):
+        """Represent Node."""
+        if len(self.children) < 1:
+            return "No parameters"
+        return "Function parameters"
+
     def __len__(self):
         """Object length."""
         return len(self.children)
@@ -160,7 +166,10 @@ class FunctionNode(Node):
 
     def __repr__(self):
         """Represent node."""
-        return "Function %s" % (self.identifier)
+        if (len(self.children) > 1
+                and isinstance(self.children[1], ProgramNode)):
+            return "Function %s" % (self.identifier)
+        return "Call function %s" % (self.identifier)
 
 
 class OpNode(Node):

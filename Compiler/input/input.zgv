@@ -1,28 +1,33 @@
 print "Start!";
-def abc(a, b, c) {
-	print a * b;
+def abc(number a, number b, number c) {
+	number d = a * b;
+	print d;
 	print b;
 	print c;
-	}
+}
 
-def a(a) {
+def a(number a) {
 	print a;
 }
 
 def void(){
 	print 2000;
+	print "void executed";
 }
 
-number a=0;
-while (a-10) {
-	number b = 0;
-	while (b-2) {
+number a = 0;
+abc(5, 10, 15);
+while (a<10) {
+	number b = 3;
+	while (b>=2) {
 		print a;
 		if(a==5) {
 			a(b);
 		}
-		b = b+1;
+		b = b-1;
 	}
 	a = a+1;
 }
-void();
+for(number z = 1; z <= 8; z = z * 2;){
+	void();
+}

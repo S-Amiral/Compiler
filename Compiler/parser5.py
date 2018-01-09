@@ -96,14 +96,14 @@ def p_fct(p):
     """
     fct : IDENTIFIER '(' ')' ';'
     """
-    p[0] = AST.FunctionNode(p[1], AST.FunctionParametersNode([]))
+    p[0] = AST.FunctionNode(p[1], [AST.FunctionParametersNode([])])
 
 
 def p_fct_params(p):
     """
     fct : IDENTIFIER '(' fct_expression ')' ';'
     """
-    p[0] = AST.FunctionNode(p[1], AST.FunctionParametersNode(p[3]))
+    p[0] = AST.FunctionNode(p[1], [AST.FunctionParametersNode(p[3])])
 
 
 def p_fct_expression(p):
@@ -160,6 +160,19 @@ def p_minus(p):
     p[0] = AST.OpNode(p[1], [p[2]])
 
 
+def p_variable_type(p):
+    """ variable_type : NUMBER
+    | STRING
+    | BOOL """
+    p[0] = p[1]
+
+
+def p_expression_fct(p):
+    """ expression : variable_type IDENTIFIER """
+    vars[p[2]] = (p[1], None)
+    p[0] = AST.AssignInitNode(p[1], [AST.TokenNode(p[2]), AST.TokenNode(None)])
+
+
 def p_assign_number(p):
     """ assignation : NUMBER IDENTIFIER '=' expression ';' """
     vars[p[2]] = ('NUMBER', p[4])
@@ -184,6 +197,11 @@ def p_assign(p):
     """ assignation : IDENTIFIER '=' expression ';' """
     vars[p[1]] = (vars[p[1]][0], p[3])
     p[0] = AST.AssignNode([AST.TokenNode(p[1]), p[3]])
+
+
+def p_expression_text(p):
+    """expression : TEXT"""
+    p[0] = AST.TokenNode(p[1])
 
 
 def p_error(p):
