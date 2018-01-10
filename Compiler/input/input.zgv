@@ -28,6 +28,8 @@ while (a<10) {
 	}
 	a = a+1;
 }
-for(number z = 1; z <= 8; z = z * 2;){
+number t = 1;
+d();
+for(number d = 1; d <= 8; d = d * 2){
 	void();
 }
