@@ -84,14 +84,30 @@ def t_IDENTIFIER(t):
         t.type = t.value.upper()
     return t
 
+# Define a rule so we can track line numbers
+
 
 def t_newline(t):
     r'\n+'
     t.lexer.lineno += len(t.value)
 
+# Compute column.
+#     input is the input text string
+#     token is a token instance
+
+
+def find_column(input, token):
+    last_cr = input.rfind('\n', 0, token.lexpos)
+    if last_cr < 0:
+        last_cr = 0
+    column = (token.lexpos - last_cr) + 1
+    return column
+
 
 t_ignore = ' \t'
 
+
+# Error handling rule
 
 def t_error(t):
     print("Illegal character '%s'" % repr(t.value[0]))

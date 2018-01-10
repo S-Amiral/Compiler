@@ -1,0 +1,8 @@
+print "Start!";
+def abc(number a, number b, number c) {
+	number d = a * b;
+	print d;
+	print b;
+	print c;
+}
+abc(5, 10, 15);
